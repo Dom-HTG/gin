@@ -5,14 +5,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type ProductStore interface {
-	Get()
-	List()
-	Add()
-	Update()
-	Delete()
-}
-
 func main() {
 	router := gin.Default()
 
