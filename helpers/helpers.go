@@ -3,13 +3,15 @@ package helpers
 import (
 	"encoding/json"
 	"io"
+	"log"
 	"net/http"
+
+	"github.com/Dom-HTG/gin/models"
 )
 
 // helper function to fetch dummydata from third party api.
 func DummyData() ([]models.Product, error) {
-	URL := "https://dummyjson.com/products"
-	res, err := http.Get(URL)
+	res, err := http.Get("https://dummyjson.com/products")
 	if err != nil {
 		return nil, err
 	}
@@ -21,10 +23,10 @@ func DummyData() ([]models.Product, error) {
 		return nil, err
 	}
 
-	var newProduct []models.Product
-	if err := json.Unmarshal(response, &newProduct); err != nil {
-		return nil, err
-	}
+	var sampleProduct models.ProductStore
 
-	return newProduct, nil
+	if err := json.Unmarshal(response, &sampleProduct); err != nil {
+		log.Fatal(err)
+	}
+	return sampleProduct.Products, nil
 }

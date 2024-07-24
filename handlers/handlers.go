@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -19,6 +20,7 @@ func ListProducts(ctx *gin.Context) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	fmt.Print(sample)
 	ctx.IndentedJSON(http.StatusOK, sample)
 }
 
