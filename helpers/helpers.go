@@ -2,11 +2,16 @@ package helpers
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
+	"os"
 
 	"github.com/Dom-HTG/gin/models"
+	"github.com/dgrijalva/jwt-go"
 )
+
+var JWTSECRET = os.Getenv("JWTSECRET")
 
 // helper function to fetch dummydata from third party api.
 func DummyData() ([]models.Product, error) {
@@ -29,3 +34,13 @@ func DummyData() ([]models.Product, error) {
 	}
 	return sampleProduct.Products, nil
 }
+
+func VerifyToken(token *jwt.Token) (interface{}, error) {
+	_, verified := token.Method.(*jwt.SigningMethodHMAC)
+	if verified {
+		return models.Config.JWTSECRET, nil
+	}
+	return nil, fmt.Errorf("unexpected algo: %v", token.Header["alg"])
+}
+
+func SignToken()

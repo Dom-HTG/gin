@@ -2,9 +2,9 @@ package main
 
 import (
 	"log"
-	"os"
 
 	"github.com/Dom-HTG/gin/handlers"
+	"github.com/Dom-HTG/gin/models"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 )
@@ -17,7 +17,6 @@ func main() {
 	}
 
 	//get environment variables.
-	PORT := os.Getenv("PORT")
 
 	//Instantiate Router
 	router := gin.Default()
@@ -29,5 +28,5 @@ func main() {
 	router.PUT("/products/:id", handlers.UpdateProduct)
 	router.DELETE("/products/:id", handlers.DeleteProduct)
 
-	router.Run(PORT)
+	router.Run(models.Config.Port)
 }
