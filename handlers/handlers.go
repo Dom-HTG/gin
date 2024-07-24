@@ -34,8 +34,8 @@ func ListProduct(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err})
 	}
 
-	for i, product := range sample {
-		if sample[i].ID == id {
+	for _, product := range sample {
+		if product.ID == id {
 			ctx.JSON(http.StatusOK, product)
 			return
 		}
