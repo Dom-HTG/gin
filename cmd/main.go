@@ -11,7 +11,7 @@ func main() {
 	router.GET("/home", handlers.HomeHandler)
 	router.GET("/products", handlers.ListProducts)
 	router.GET("/products/:id", handlers.ListProduct)
-	router.POST("/products/:id", handlers.AddProduct)
+	router.POST("/products", handlers.AddProduct)
 	router.PUT("/products/:id", handlers.UpdateProduct)
 	router.DELETE("/products/:id", handlers.DeleteProduct)
 

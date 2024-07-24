@@ -1,8 +1,6 @@
 package handlers
 
 import (
-	"fmt"
-	"log"
 	"net/http"
 	"strconv"
 
@@ -18,16 +16,16 @@ func HomeHandler(ctx *gin.Context) {
 func ListProducts(ctx *gin.Context) {
 	sample, err := helpers.DummyData()
 	if err != nil {
-		log.Fatal(err)
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err})
 	}
-	fmt.Print(sample)
-	ctx.IndentedJSON(http.StatusOK, sample)
+
+	ctx.JSON(http.StatusOK, sample)
 }
 
 func ListProduct(ctx *gin.Context) {
 	sample, err := helpers.DummyData()
 	if err != nil {
-		log.Fatal(err)
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err})
 	}
 
 	idstring := ctx.Param("id")
@@ -39,7 +37,6 @@ func ListProduct(ctx *gin.Context) {
 	for _, product := range sample {
 		if product.ID == id {
 			ctx.JSON(http.StatusOK, product)
-			return
 		}
 	}
 }
@@ -47,7 +44,7 @@ func ListProduct(ctx *gin.Context) {
 func AddProduct(ctx *gin.Context) {
 	sample, err := helpers.DummyData()
 	if err != nil {
-		log.Fatal(err)
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err})
 	}
 
 	var newProduct models.Product
@@ -62,7 +59,7 @@ func AddProduct(ctx *gin.Context) {
 func UpdateProduct(ctx *gin.Context) {
 	sample, err := helpers.DummyData()
 	if err != nil {
-		log.Fatal(err)
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err})
 	}
 
 	idstring := ctx.Param("id")
@@ -80,7 +77,6 @@ func UpdateProduct(ctx *gin.Context) {
 		if product.ID == id {
 			product = UpdatedProduct
 		}
-		return
 	}
 	ctx.JSON(http.StatusOK, sample)
 }
@@ -88,7 +84,7 @@ func UpdateProduct(ctx *gin.Context) {
 func DeleteProduct(ctx *gin.Context) {
 	sample, err := helpers.DummyData()
 	if err != nil {
-		log.Fatal(err)
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err})
 	}
 
 	idstring := ctx.Param("id")
@@ -101,7 +97,6 @@ func DeleteProduct(ctx *gin.Context) {
 		if product.ID == id {
 			sample = append(sample[:i], sample[i+1:]...)
 		}
-		return
 	}
 	ctx.JSON(http.StatusOK, sample)
 }

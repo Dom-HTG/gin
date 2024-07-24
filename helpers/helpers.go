@@ -3,7 +3,6 @@ package helpers
 import (
 	"encoding/json"
 	"io"
-	"log"
 	"net/http"
 
 	"github.com/Dom-HTG/gin/models"
@@ -26,7 +25,7 @@ func DummyData() ([]models.Product, error) {
 	var sampleProduct models.ProductStore
 
 	if err := json.Unmarshal(response, &sampleProduct); err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 	return sampleProduct.Products, nil
 }
