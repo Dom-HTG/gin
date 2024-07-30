@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	"github.com/Dom-HTG/gin/handlers"
+	controller "github.com/Dom-HTG/gin/controllers"
 	"github.com/Dom-HTG/gin/models"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -16,17 +16,24 @@ func main() {
 		log.Fatal(err)
 	}
 
-	//get environment variables.
+	//Instance for injecting dependencies
+	productSample := &controller.ProductSample{}
 
-	//Instantiate Router
+	//Instantiate gin Router and group routes.
 	router := gin.Default()
 
-	router.GET("/home", handlers.HomeHandler)
-	router.GET("/products", handlers.ListProducts)
-	router.GET("/products/:id", handlers.ListProduct)
-	router.POST("/products", handlers.AddProduct)
-	router.PUT("/products/:id", handlers.UpdateProduct)
-	router.DELETE("/products/:id", handlers.DeleteProduct)
+	router.GET("/home", productSample.HomeHandler)
+	router.GET("/products", productSample.ListProducts)
+	router.GET("/products/:id", productSample.ListProduct)
+
+	//All endpoints that allows requests to be mutated are 'protected'.
+	protected := router.Group("/api/protected")
+	{
+		protected.POST("/products", productSample.AddProduct)
+		protected.PUT("/products/:id", productSample.UpdateProduct)
+		protected.DELETE("/products/:id", productSample.DeleteProduct)
+	}
 
 	router.Run(models.Config.Port)
+
 }
