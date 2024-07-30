@@ -42,5 +42,3 @@ func VerifyToken(token *jwt.Token) (interface{}, error) {
 	}
 	return nil, fmt.Errorf("unexpected algo: %v", token.Header["alg"])
 }
-
-func SignToken()

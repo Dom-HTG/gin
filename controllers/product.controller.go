@@ -1,4 +1,4 @@
-package handlers
+package controller
 
 import (
 	"net/http"
@@ -9,11 +9,22 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func HomeHandler(ctx *gin.Context) {
+type ProductContainer interface {
+	ListProducts() ([]models.Product, error)
+	ListProduct(id string) ([]models.Product, error)
+	AddProduct(product *models.Product) error
+	UpdateProduct(id string, product *models.Product) error
+	DeleteProduct(id string) error
+	HomeHandler() any
+}
+
+type ProductSample struct{}
+
+func (ps *ProductSample) HomeHandler(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"message": "This is the home page."})
 }
 
-func ListProducts(ctx *gin.Context) {
+func (ps *ProductSample) ListProducts(ctx *gin.Context) {
 	sample, err := helpers.DummyData()
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err})
@@ -22,7 +33,7 @@ func ListProducts(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, sample)
 }
 
-func ListProduct(ctx *gin.Context) {
+func (ps *ProductSample) ListProduct(ctx *gin.Context) {
 	sample, err := helpers.DummyData()
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err})
@@ -41,7 +52,7 @@ func ListProduct(ctx *gin.Context) {
 	}
 }
 
-func AddProduct(ctx *gin.Context) {
+func (ps *ProductSample) AddProduct(ctx *gin.Context) {
 	sample, err := helpers.DummyData()
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err})
@@ -56,7 +67,7 @@ func AddProduct(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, sample)
 }
 
-func UpdateProduct(ctx *gin.Context) {
+func (ps *ProductSample) UpdateProduct(ctx *gin.Context) {
 	sample, err := helpers.DummyData()
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err})
@@ -81,7 +92,7 @@ func UpdateProduct(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, sample)
 }
 
-func DeleteProduct(ctx *gin.Context) {
+func (ps *ProductSample) DeleteProduct(ctx *gin.Context) {
 	sample, err := helpers.DummyData()
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err})
