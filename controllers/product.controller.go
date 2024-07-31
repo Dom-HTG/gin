@@ -6,6 +6,7 @@ import (
 
 	"github.com/Dom-HTG/gin/helpers"
 	"github.com/Dom-HTG/gin/models"
+	"github.com/Dom-HTG/gin/services"
 	"github.com/gin-gonic/gin"
 )
 
@@ -18,13 +19,15 @@ type ProductContainer interface {
 	HomeHandler()
 }
 
-type ProductSample struct{}
+type ProductDependencies struct {
+	service services.ServiceContainer
+}
 
-func (ps *ProductSample) HomeHandler(ctx *gin.Context) {
+func (ps *ProductDependencies) HomeHandler(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"message": "This is the home page."})
 }
 
-func (ps *ProductSample) ListProducts(ctx *gin.Context) {
+func (ps *ProductDependencies) ListProducts(ctx *gin.Context) {
 	sample, err := helpers.DummyData()
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err})
@@ -33,7 +36,7 @@ func (ps *ProductSample) ListProducts(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, sample)
 }
 
-func (ps *ProductSample) ListProduct(ctx *gin.Context) {
+func (ps *ProductDependencies) ListProduct(ctx *gin.Context) {
 	sample, err := helpers.DummyData()
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err})
@@ -52,7 +55,7 @@ func (ps *ProductSample) ListProduct(ctx *gin.Context) {
 	}
 }
 
-func (ps *ProductSample) AddProduct(ctx *gin.Context) {
+func (ps *ProductDependencies) AddProduct(ctx *gin.Context) {
 	sample, err := helpers.DummyData()
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err})
@@ -67,7 +70,7 @@ func (ps *ProductSample) AddProduct(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, sample)
 }
 
-func (ps *ProductSample) UpdateProduct(ctx *gin.Context) {
+func (ps *ProductDependencies) UpdateProduct(ctx *gin.Context) {
 	sample, err := helpers.DummyData()
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err})
