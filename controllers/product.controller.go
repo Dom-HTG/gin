@@ -95,7 +95,7 @@ func (ps *ProductDependencies) UpdateProduct(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, sample)
 }
 
-func (ps *ProductSample) DeleteProduct(ctx *gin.Context) {
+func (ps *ProductDependencies) DeleteProduct(ctx *gin.Context) {
 	sample, err := helpers.DummyData()
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err})
