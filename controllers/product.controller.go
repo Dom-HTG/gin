@@ -10,12 +10,12 @@ import (
 )
 
 type ProductContainer interface {
-	ListProducts() ([]models.Product, error)
-	ListProduct(id string) ([]models.Product, error)
-	AddProduct(product *models.Product) error
-	UpdateProduct(id string, product *models.Product) error
-	DeleteProduct(id string) error
-	HomeHandler() any
+	ListProducts()
+	ListProduct(id string)
+	AddProduct(product *models.Product)
+	UpdateProduct(id string, product *models.Product)
+	DeleteProduct(id string)
+	HomeHandler()
 }
 
 type ProductSample struct{}
