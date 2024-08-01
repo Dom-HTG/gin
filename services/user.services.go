@@ -48,7 +48,7 @@ func (s *ServiceDependency) AddProduct(product models.Product) error {
 }
 
 func (s *ServiceDependency) UpdatedProduct(id int, product models.Product) error {
-	err := s.repo.UpdatedProduct(id, product)
+	err := s.repo.UpdateProduct(id, product)
 	if err != nil {
 		return err
 	}
