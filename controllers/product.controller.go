@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/Dom-HTG/gin/helpers"
 	"github.com/Dom-HTG/gin/models"
 	"github.com/Dom-HTG/gin/services"
 	"github.com/gin-gonic/gin"
@@ -19,98 +18,89 @@ type ProductContainer interface {
 	HomeHandler()
 }
 
-type ProductDependencies struct {
+type ControllerDependencies struct {
 	service services.ServiceContainer
 }
 
-func (ps *ProductDependencies) HomeHandler(ctx *gin.Context) {
+func NewControllerDependencies(service services.ServiceContainer) *ControllerDependencies {
+	return &ControllerDependencies{
+		service: service,
+	}
+}
+
+func (cd *ControllerDependencies) HomeHandler(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"message": "This is the home page."})
 }
 
-func (ps *ProductDependencies) ListProducts(ctx *gin.Context) {
-	sample, err := helpers.DummyData()
+func (cd *ControllerDependencies) ListProducts(ctx *gin.Context) {
+	products, err := cd.service.GetAllProducts()
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err})
+		ctx.Error(err)
 	}
-
-	ctx.JSON(http.StatusOK, sample)
+	ctx.JSON(http.StatusOK, products)
 }
 
-func (ps *ProductDependencies) ListProduct(ctx *gin.Context) {
-	sample, err := helpers.DummyData()
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err})
-	}
-
+func (cd *ControllerDependencies) ListProduct(ctx *gin.Context) {
 	idstring := ctx.Param("id")
 	id, err := strconv.Atoi(idstring)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err})
+		ctx.Error(err)
 	}
 
-	for _, product := range sample {
-		if product.ID == id {
-			ctx.JSON(http.StatusOK, product)
-		}
+	product, err := cd.service.GetProductByID(id)
+	if err != nil {
+		ctx.Error(err)
 	}
+	ctx.JSON(http.StatusOK, product)
 }
 
-func (ps *ProductDependencies) AddProduct(ctx *gin.Context) {
-	sample, err := helpers.DummyData()
+func (cd *ControllerDependencies) AddProduct(ctx *gin.Context) {
+	var product models.Product
+	err := ctx.BindJSON(&product)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err})
+		ctx.Error(err)
 	}
 
-	var newProduct models.Product
-	if err := ctx.BindJSON(&newProduct); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	errr := cd.service.AddProduct(product)
+	if err != nil {
+		ctx.Error(errr)
 	}
 
-	sample = append(sample, newProduct)
-	ctx.JSON(http.StatusCreated, sample)
+	ctx.JSON(http.StatusCreated, gin.H{"msg": "success", "log": "new resource created"})
 }
 
-func (ps *ProductDependencies) UpdateProduct(ctx *gin.Context) {
-	sample, err := helpers.DummyData()
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err})
-	}
-
+func (cd *ControllerDependencies) UpdateProduct(ctx *gin.Context) {
 	idstring := ctx.Param("id")
 	id, err := strconv.Atoi(idstring)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"err": err.Error()})
+		ctx.Error(err)
 	}
 
-	var UpdatedProduct models.Product
-	if err := ctx.BindJSON(&UpdatedProduct); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	var product models.Product
+	errr := ctx.BindJSON(&product)
+	if err != nil {
+		ctx.Error(errr)
 	}
 
-	for _, product := range sample {
-		if product.ID == id {
-			product = UpdatedProduct
-		}
+	errrr := cd.service.UpdatedProduct(id, product)
+	if errrr != nil {
+		ctx.Error(errrr)
 	}
-	ctx.JSON(http.StatusOK, sample)
+
+	ctx.JSON(http.StatusOK, gin.H{"msg": "success", "log": "resource updated successfully"})
 }
 
-func (ps *ProductDependencies) DeleteProduct(ctx *gin.Context) {
-	sample, err := helpers.DummyData()
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err})
-	}
-
+func (cd *ControllerDependencies) DeleteProduct(ctx *gin.Context) {
 	idstring := ctx.Param("id")
 	id, err := strconv.Atoi(idstring)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"err": err.Error()})
+		ctx.Error(err)
 	}
 
-	for i, product := range sample {
-		if product.ID == id {
-			sample = append(sample[:i], sample[i+1:]...)
-		}
+	errr := cd.service.DeleteProduct(id)
+	if errr != nil {
+		ctx.Error(errr)
 	}
-	ctx.JSON(http.StatusOK, sample)
+
+	ctx.JSON(http.StatusOK, gin.H{"msg": "Success", "log": "resource deleted successfully"})
 }
