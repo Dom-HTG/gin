@@ -9,7 +9,7 @@ type RepositoryContainer interface {
 	GetProductByID(id int) (models.Product, error)
 	GetAllProducts() ([]models.Product, error)
 	AddProduct(product models.Product) error
-	UpdatedProduct(id int, product models.Product) error
+	UpdateProduct(id int, product models.Product) error
 	DeleteProduct(id int) error
 }
 
