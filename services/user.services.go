@@ -14,13 +14,19 @@ type ServiceContainer interface {
 }
 
 type ServiceDependency struct {
-	repo repository.UserRepository
+	repo repository.RepositoryContainer
+}
+
+func NewServiceDependency(repo repository.RepositoryContainer) *ServiceDependency {
+	return &ServiceDependency{
+		repo: repo,
+	}
 }
 
 func (s *ServiceDependency) GetProductByID(id int) (models.Product, error) {
 	product, err := s.repo.GetProductByID(id)
 	if err != nil {
-		return nil, err
+		return models.Product{}, err
 	}
 	return product, nil
 }
@@ -28,7 +34,7 @@ func (s *ServiceDependency) GetProductByID(id int) (models.Product, error) {
 func (s *ServiceDependency) GetAllProducts() ([]models.Product, error) {
 	products, err := s.repo.GetAllProducts()
 	if err != nil {
-		return nil, err
+		return []models.Product{}, err
 	}
 	return products, nil
 }
