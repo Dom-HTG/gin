@@ -4,6 +4,7 @@ import (
 	"log"
 
 	controller "github.com/Dom-HTG/gin/controllers"
+	"github.com/Dom-HTG/gin/middlewares"
 	"github.com/Dom-HTG/gin/models"
 	"github.com/Dom-HTG/gin/repository"
 	"github.com/Dom-HTG/gin/services"
@@ -38,12 +39,17 @@ func main() {
 	router.GET("/products", productController.ListProducts)
 	router.GET("/products/:id", productController.ListProduct)
 
-	//All endpoints that allows requests to be mutated are 'protected'.
+	//All endpoints that allows mutation of data are 'protected'.
 	protected := router.Group("/api/protected")
 	{
-		protected.POST("/products", productController.AddProduct)
-		protected.PUT("/products/:id", productController.UpdateProduct)
-		protected.DELETE("/products/:id", productController.DeleteProduct)
+		protected.POST("/products", middlewares.Authenticate(), productController.AddProduct)
+		protected.PUT("/products/:id", middlewares.Authenticate(), productController.UpdateProduct)
+		protected.DELETE("/products/:id", middlewares.Authenticate(), productController.DeleteProduct)
+	}
+
+	access := router.Group("/api/access")
+	{
+		access.POST("/login", middlewares.generateToken())
 	}
 
 	router.Run(models.Config.Port)

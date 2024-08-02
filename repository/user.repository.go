@@ -5,66 +5,46 @@ import (
 	"gorm.io/gorm"
 )
 
-type RepositoryContainer interface {
-	GetProductByID(id int) (models.Product, error)
-	GetAllProducts() ([]models.Product, error)
-	AddProduct(product models.Product) error
-	UpdateProduct(id int, product models.Product) error
-	DeleteProduct(id int) error
+type UserRepositoryContainer interface {
+	CreateUser(user *models.User) error
+	GetUserByEmail(email string) (*models.User, error)
+	UpdateUser(id int, user *models.User) error
+	DeleteUser(id int) error
 }
 
-type RepoDependencies struct {
+type UserRepoDependency struct {
 	DBConn *gorm.DB
 }
 
-func NewRepoDependencies(DBConn *gorm.DB) *RepoDependencies {
-	return &RepoDependencies{
-		DBConn: DBConn,
-	}
-}
-
-func (r *RepoDependencies) GetProductByID(id int) (models.Product, error) {
-	var product models.Product
-
-	results := r.DBConn.Where("id = ?", id).Find(&product)
-	if results.Error != nil {
-		return models.Product{}, results.Error
-	}
-	return product, nil
-}
-
-func (r *RepoDependencies) GetAllProducts() ([]models.Product, error) {
-	var products []models.Product
-
-	results := r.DBConn.Find(&products)
-	if results.Error != nil {
-		return []models.Product{}, results.Error
-	}
-	return products, nil
-}
-
-func (r *RepoDependencies) AddProduct(product models.Product) error {
-	results := r.DBConn.Create(&product)
-	if results.Error != nil {
-		return results.Error
+func (d *UserRepoDependency) CreateUser(user *models.User) error {
+	tx := d.DBConn.Create(&user)
+	if tx.Error != nil {
+		return tx.Error
 	}
 	return nil
 }
 
-func (r *RepoDependencies) UpdateProduct(id int, product models.Product) error {
-	results := r.DBConn.Where("id = ?", id).Updates(&product)
-	if results.Error != nil {
-		return results.Error
+func (d *UserRepoDependency) GetUserByEmail(email string) (*models.User, error) {
+	var user models.User
+	tx := d.DBConn.Where("email = ?", email).First(&user)
+	if tx.Error == nil {
+		return nil, tx.Error
+	}
+	return &user, nil
+}
+
+func (d *UserRepoDependency) UpdateUser(id int, user *models.User) error {
+	tx := d.DBConn.Where("id = ?", id).Updates(&user)
+	if tx.Error != nil {
+		return tx.Error
 	}
 	return nil
 }
 
-func (r *RepoDependencies) DeleteProduct(id int) error {
-	var product models.Product
-
-	results := r.DBConn.Where("id = ?", id).Delete(&product)
-	if results.Error != nil {
-		return results.Error
+func (d *UserRepoDependency) DeleteUser(id int) error {
+	tx := d.DBConn.Where("id = ?", id).Delete(&models.User{})
+	if tx.Error != nil {
+		return tx.Error
 	}
 	return nil
 }

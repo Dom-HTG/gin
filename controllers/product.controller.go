@@ -18,21 +18,21 @@ type ProductContainer interface {
 	HomeHandler()
 }
 
-type ControllerDependencies struct {
-	service services.ServiceContainer
+type ProductControllerDependencies struct {
+	service services.ProductServiceContainer
 }
 
-func NewControllerDependencies(service services.ServiceContainer) *ControllerDependencies {
-	return &ControllerDependencies{
+func NewControllerDependencies(service services.ProductServiceContainer) *ProductControllerDependencies {
+	return &ProductControllerDependencies{
 		service: service,
 	}
 }
 
-func (cd *ControllerDependencies) HomeHandler(ctx *gin.Context) {
+func (cd *ProductControllerDependencies) HomeHandler(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"message": "This is the home page."})
 }
 
-func (cd *ControllerDependencies) ListProducts(ctx *gin.Context) {
+func (cd *ProductControllerDependencies) ListProducts(ctx *gin.Context) {
 	products, err := cd.service.GetAllProducts()
 	if err != nil {
 		ctx.Error(err)
@@ -40,7 +40,7 @@ func (cd *ControllerDependencies) ListProducts(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, products)
 }
 
-func (cd *ControllerDependencies) ListProduct(ctx *gin.Context) {
+func (cd *ProductControllerDependencies) ListProduct(ctx *gin.Context) {
 	idstring := ctx.Param("id")
 	id, err := strconv.Atoi(idstring)
 	if err != nil {
@@ -54,7 +54,7 @@ func (cd *ControllerDependencies) ListProduct(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, product)
 }
 
-func (cd *ControllerDependencies) AddProduct(ctx *gin.Context) {
+func (cd *ProductControllerDependencies) AddProduct(ctx *gin.Context) {
 	var product models.Product
 	err := ctx.BindJSON(&product)
 	if err != nil {
@@ -69,7 +69,7 @@ func (cd *ControllerDependencies) AddProduct(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, gin.H{"msg": "success", "log": "new resource created"})
 }
 
-func (cd *ControllerDependencies) UpdateProduct(ctx *gin.Context) {
+func (cd *ProductControllerDependencies) UpdateProduct(ctx *gin.Context) {
 	idstring := ctx.Param("id")
 	id, err := strconv.Atoi(idstring)
 	if err != nil {
@@ -90,7 +90,7 @@ func (cd *ControllerDependencies) UpdateProduct(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"msg": "success", "log": "resource updated successfully"})
 }
 
-func (cd *ControllerDependencies) DeleteProduct(ctx *gin.Context) {
+func (cd *ProductControllerDependencies) DeleteProduct(ctx *gin.Context) {
 	idstring := ctx.Param("id")
 	id, err := strconv.Atoi(idstring)
 	if err != nil {

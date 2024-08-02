@@ -5,58 +5,43 @@ import (
 	"github.com/Dom-HTG/gin/repository"
 )
 
-type ServiceContainer interface {
-	GetProductByID(id int) (models.Product, error)
-	GetAllProducts() ([]models.Product, error)
-	AddProduct(product models.Product) error
-	UpdatedProduct(id int, product models.Product) error
-	DeleteProduct(id int) error
+type UserServiceContainer interface {
+	CreateUser(user *models.User) error
+	GetUserByEmail(email string) (*models.User, error)
+	UpdateUser(id int, user *models.User)
+	DeleteUser(id int) error
 }
 
-type ServiceDependency struct {
-	repo repository.RepositoryContainer
+type UserServiceDependency struct {
+	repo repository.UserRepositoryContainer
 }
 
-func NewServiceDependency(repo repository.RepositoryContainer) *ServiceDependency {
-	return &ServiceDependency{
-		repo: repo,
-	}
-}
-
-func (s *ServiceDependency) GetProductByID(id int) (models.Product, error) {
-	product, err := s.repo.GetProductByID(id)
-	if err != nil {
-		return models.Product{}, err
-	}
-	return product, nil
-}
-
-func (s *ServiceDependency) GetAllProducts() ([]models.Product, error) {
-	products, err := s.repo.GetAllProducts()
-	if err != nil {
-		return []models.Product{}, err
-	}
-	return products, nil
-}
-
-func (s *ServiceDependency) AddProduct(product models.Product) error {
-	err := s.repo.AddProduct(product)
+func (s *UserServiceDependency) CreateUser(user *models.User) error {
+	err := s.repo.CreateUser(user)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (s *ServiceDependency) UpdatedProduct(id int, product models.Product) error {
-	err := s.repo.UpdateProduct(id, product)
+func (s *UserServiceDependency) GetUseByEmail(email string) (*models.User, error) {
+	user, err := s.repo.GetUserByEmail(email)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
+}
+
+func (s *UserServiceDependency) UpdateUser(id int, user *models.User) error {
+	err := s.repo.UpdateUser(id, user)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (s *ServiceDependency) DeleteProduct(id int) error {
-	err := s.repo.DeleteProduct(id)
+func (s *UserServiceDependency) DeleteUser(id int) error {
+	err := s.repo.DeleteUser(id)
 	if err != nil {
 		return err
 	}

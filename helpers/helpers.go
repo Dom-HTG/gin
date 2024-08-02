@@ -1,11 +1,9 @@
 package helpers
 
 import (
-	"encoding/json"
 	"fmt"
-	"io"
-	"net/http"
 	"os"
+	"time"
 
 	"github.com/Dom-HTG/gin/models"
 	"github.com/dgrijalva/jwt-go"
@@ -13,32 +11,36 @@ import (
 
 var JWTSECRET = os.Getenv("JWTSECRET")
 
-// helper function to fetch dummydata from third party api.
-func DummyData() ([]models.Product, error) {
-	res, err := http.Get("https://dummyjson.com/products")
-	if err != nil {
-		return nil, err
-	}
-
-	defer res.Body.Close()
-
-	response, err := io.ReadAll(res.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	var sampleProduct models.ProductStore
-
-	if err := json.Unmarshal(response, &sampleProduct); err != nil {
-		return nil, err
-	}
-	return sampleProduct.Products, nil
-}
-
+// helper function to check token validity.
 func VerifyToken(token *jwt.Token) (interface{}, error) {
 	_, verified := token.Method.(*jwt.SigningMethodHMAC)
 	if verified {
 		return models.Config.JWTSECRET, nil
 	}
 	return nil, fmt.Errorf("unexpected algo: %v", token.Header["alg"])
+}
+
+// structure to hold token claims.
+type claims struct {
+	Email string `json:"email"`
+	jwt.StandardClaims
+}
+
+func GenerateToken(email string) (string, error) {
+	exp := time.Now().Add(24 * time.Hour)
+
+	newClaims := &claims{
+		Email: email,
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: exp.Unix(),
+		},
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, newClaims)
+
+	signed_token, err := token.SignedString(JWTSECRET)
+	if err != nil {
+		return "", err
+	}
+	return signed_token, nil
 }

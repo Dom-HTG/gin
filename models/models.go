@@ -12,6 +12,13 @@ type Product struct {
 	Dimensions  map[string]float64 `json:"dimensions"`
 }
 
+type User struct {
+	FirstName string `json:"firstname"`
+	LastName  string `json:"lastname"`
+	Email     string `json:"email"`
+	Password  string `json:"password"`
+}
+
 type ProductStore struct {
 	Products []Product `json:"products"`
 }
