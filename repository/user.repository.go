@@ -16,6 +16,12 @@ type UserRepoDependency struct {
 	DBConn *gorm.DB
 }
 
+func NewUserRepoDependency(DBConn *gorm.DB) *UserRepoDependency {
+	return &UserRepoDependency{
+		DBConn: DBConn,
+	}
+}
+
 func (d *UserRepoDependency) CreateUser(user *models.User) error {
 	tx := d.DBConn.Create(&user)
 	if tx.Error != nil {

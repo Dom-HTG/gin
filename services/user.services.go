@@ -16,6 +16,12 @@ type UserServiceDependency struct {
 	repo repository.UserRepositoryContainer
 }
 
+func NewUserServiceDependency(repo repository.UserRepositoryContainer) *UserServiceDependency {
+	return &UserServiceDependency{
+		repo: repo,
+	}
+}
+
 func (s *UserServiceDependency) CreateUser(user *models.User) error {
 	err := s.repo.CreateUser(user)
 	if err != nil {
@@ -24,7 +30,7 @@ func (s *UserServiceDependency) CreateUser(user *models.User) error {
 	return nil
 }
 
-func (s *UserServiceDependency) GetUseByEmail(email string) (*models.User, error) {
+func (s *UserServiceDependency) GetUserByEmail(email string) (*models.User, error) {
 	user, err := s.repo.GetUserByEmail(email)
 	if err != nil {
 		return nil, err

@@ -28,9 +28,15 @@ func main() {
 	}
 
 	//Instance for injecting dependencies
+	//product layer.
 	productRepo := repository.NewRepoDependencies(db)
 	productService := services.NewServiceDependency(productRepo)
 	productController := controller.NewControllerDependencies(productService)
+
+	//user Layer.
+	userRepo := repository.NewUserRepoDependency()
+	userService := services.NewUserServiceDependency(userRepo)
+	userController := controller.NewUserContollerDependency(userService)
 
 	//Instantiate gin Router and group routes.
 	router := gin.Default()
@@ -49,7 +55,7 @@ func main() {
 
 	access := router.Group("/api/access")
 	{
-		access.POST("/login", middlewares.generateToken())
+		access.POST("/login", middlewares.Authenticate())
 	}
 
 	router.Run(models.Config.Port)

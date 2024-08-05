@@ -3,7 +3,6 @@ package middlewares
 import (
 	"net/http"
 	"strings"
-	"time"
 
 	"github.com/Dom-HTG/gin/helpers"
 	"github.com/dgrijalva/jwt-go"
@@ -36,29 +35,4 @@ func Authenticate() gin.HandlerFunc {
 		}
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "invalid token"})
 	}
-}
-
-// structure to hold token claims.
-type claims struct {
-	Email string `json:"email"`
-	jwt.StandardClaims
-}
-
-func generateToken(email string) (string, error) {
-	exp := time.Now().Add(24 * time.Hour)
-
-	newClaims := &claims{
-		Email: email,
-		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: exp.Unix(),
-		},
-	}
-
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, newClaims)
-
-	signed_token, err := token.SignedString(helpers.JWTSECRET)
-	if err != nil {
-		return "", err
-	}
-	return signed_token, nil
 }
