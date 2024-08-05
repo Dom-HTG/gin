@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 
 	controller "github.com/Dom-HTG/gin/controllers"
@@ -27,21 +28,21 @@ func main() {
 		log.Fatal(err)
 	}
 
-	//Instance for injecting dependencies
-	//product layer.
+	//product layer dependencies.
 	productRepo := repository.NewRepoDependencies(db)
 	productService := services.NewServiceDependency(productRepo)
 	productController := controller.NewControllerDependencies(productService)
 
-	//user Layer.
-	userRepo := repository.NewUserRepoDependency()
+	//user Layerdependencies.
+	userRepo := repository.NewUserRepoDependency(db)
 	userService := services.NewUserServiceDependency(userRepo)
-	userController := controller.NewUserContollerDependency(userService)
+	userController := controller.NewUserControllerDependency(userService)
 
 	//Instantiate gin Router and group routes.
 	router := gin.Default()
 
-	router.GET("/home", productController.HomeHandler)
+	router.GET("/home", controller.HomeHandler)
+
 	router.GET("/products", productController.ListProducts)
 	router.GET("/products/:id", productController.ListProduct)
 
@@ -55,9 +56,11 @@ func main() {
 
 	access := router.Group("/api/access")
 	{
-		access.POST("/login", middlewares.Authenticate())
+		access.POST("/signup", userController.Signup)
+		access.POST("/login", middlewares.Authenticate(), userController.Login)
 	}
 
 	router.Run(models.Config.Port)
+	fmt.Printf("server started on port %s\n", models.Config.Port)
 
 }

@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/Dom-HTG/gin/models"
@@ -15,6 +16,9 @@ func InitializeDatabase() (*gorm.DB, error) {
 	if err != nil {
 		return nil, err
 	}
-	conn.AutoMigrate(&models.Product{})
+	fmt.Print("POSTGRES database connection established")
+
+	conn.AutoMigrate(&models.Product{}, &models.User{})
+
 	return conn, nil
 }

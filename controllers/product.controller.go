@@ -15,7 +15,6 @@ type ProductContainer interface {
 	AddProduct(product *models.Product)
 	UpdateProduct(id string, product *models.Product)
 	DeleteProduct(id string)
-	HomeHandler()
 }
 
 type ProductControllerDependencies struct {
@@ -28,7 +27,7 @@ func NewControllerDependencies(service services.ProductServiceContainer) *Produc
 	}
 }
 
-func (cd *ProductControllerDependencies) HomeHandler(ctx *gin.Context) {
+func HomeHandler(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"message": "This is the home page."})
 }
 

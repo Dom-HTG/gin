@@ -8,7 +8,7 @@ import (
 type UserServiceContainer interface {
 	CreateUser(user *models.User) error
 	GetUserByEmail(email string) (*models.User, error)
-	UpdateUser(id int, user *models.User)
+	UpdateUser(id int, user *models.User) error
 	DeleteUser(id int) error
 }
 

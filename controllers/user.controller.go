@@ -18,7 +18,7 @@ type UserControllerDependency struct {
 	service services.UserServiceContainer
 }
 
-func NewUserContollerDependency(service services.UserServiceContainer) *UserControllerDependency {
+func NewUserControllerDependency(service services.UserServiceContainer) *UserControllerDependency {
 	return &UserControllerDependency{
 		service: service,
 	}
@@ -46,7 +46,7 @@ func (c *UserControllerDependency) Signup(ctx *gin.Context) {
 		ctx.Error(err3)
 	}
 
-	ctx.JSON(http.StatusCreated, gin.H{"msg": "User created"})
+	ctx.JSON(http.StatusCreated, gin.H{"msg": "User created", "token": token})
 	ctx.Set("token", token)
 }
 
