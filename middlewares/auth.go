@@ -19,7 +19,7 @@ func Authenticate() gin.HandlerFunc {
 			ctx.Abort()
 			return
 		}
-		tokenstring := strings.TrimPrefix(BearerToken, "Bearer")
+		tokenstring := strings.TrimPrefix(BearerToken, "Bearer ")
 
 		//Parse token.
 		token, err := jwt.Parse(tokenstring, helpers.VerifyToken)
@@ -30,9 +30,13 @@ func Authenticate() gin.HandlerFunc {
 
 		//Map Claims & Validate Token.
 		claims, ok := token.Claims.(jwt.MapClaims)
+
 		if ok && token.Valid {
-			ctx.JSON(http.StatusOK, gin.H{"msg": "token is valid", "claims": claims})
+			ctx.Set("claims", claims)
+			ctx.Next()
 		}
+
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "invalid token"})
+		ctx.Abort()
 	}
 }

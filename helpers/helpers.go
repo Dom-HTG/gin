@@ -5,17 +5,17 @@ import (
 	"os"
 	"time"
 
-	"github.com/Dom-HTG/gin/models"
 	"github.com/dgrijalva/jwt-go"
 )
 
 var JWTSECRET = os.Getenv("JWTSECRET")
+var jwtkey = []byte(JWTSECRET)
 
 // helper function to check token validity.
 func VerifyToken(token *jwt.Token) (interface{}, error) {
 	_, verified := token.Method.(*jwt.SigningMethodHMAC)
 	if verified {
-		return models.Config.JWTSECRET, nil
+		return jwtkey, nil
 	}
 	return nil, fmt.Errorf("unexpected algo: %v", token.Header["alg"])
 }
@@ -38,7 +38,7 @@ func GenerateToken(email string) (string, error) {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, newClaims)
 
-	signed_token, err := token.SignedString(JWTSECRET)
+	signed_token, err := token.SignedString(jwtkey)
 	if err != nil {
 		return "", err
 	}

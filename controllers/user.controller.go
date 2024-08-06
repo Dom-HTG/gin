@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/Dom-HTG/gin/helpers"
@@ -30,6 +31,7 @@ type UserLogin struct {
 }
 
 func (c *UserControllerDependency) Signup(ctx *gin.Context) {
+	ctx.Header("Content-Type", "application/json")
 	var user models.User
 	if err := ctx.BindJSON(&user); err != nil {
 		ctx.Error(err)
@@ -47,7 +49,8 @@ func (c *UserControllerDependency) Signup(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusCreated, gin.H{"msg": "User created", "token": token})
-	ctx.Set("token", token)
+	// ctx.Set("token", token)
+	fmt.Print(token)
 }
 
 func (c *UserControllerDependency) Login(ctx *gin.Context) {
@@ -65,9 +68,15 @@ func (c *UserControllerDependency) Login(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"msg": "User not found"})
 	}
 
-	if pass == dbUser.Password {
-
-		ctx.Redirect(200, "/home")
+	if pass != dbUser.Password {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid username or password"})
+		return
 	}
+
+	token, err := helpers.GenerateToken(email)
+	if err != nil {
+		ctx.Error(err)
+	}
+	ctx.Set("token", token)
 	ctx.JSON(http.StatusBadRequest, gin.H{"msg": "Invalid password"})
 }

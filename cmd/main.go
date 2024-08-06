@@ -3,10 +3,10 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
 
 	controller "github.com/Dom-HTG/gin/controllers"
 	"github.com/Dom-HTG/gin/middlewares"
-	"github.com/Dom-HTG/gin/models"
 	"github.com/Dom-HTG/gin/repository"
 	"github.com/Dom-HTG/gin/services"
 	"github.com/Dom-HTG/gin/utils"
@@ -15,17 +15,21 @@ import (
 )
 
 func main() {
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = ":8080"
+	}
 
 	//Load environment variables.
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("error loading environment variables %v", err)
 	}
 
 	//database connection.
 	db, err := utils.InitializeDatabase()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("error initializing database: %v", err)
 	}
 
 	//product layer dependencies.
@@ -60,7 +64,7 @@ func main() {
 		access.POST("/login", middlewares.Authenticate(), userController.Login)
 	}
 
-	router.Run(models.Config.Port)
-	fmt.Printf("server started on port %s\n", models.Config.Port)
+	router.Run(port)
+	fmt.Printf("server is runing on port %s \n", port)
 
 }

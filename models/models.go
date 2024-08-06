@@ -16,7 +16,7 @@ type User struct {
 	FirstName string `json:"firstname" gorm:"firstname"`
 	LastName  string `json:"lastname" gorm:"lastname"`
 	Email     string `json:"email" gorm:"email"`
-	Password  string `json:"password" gorm:"-"`
+	Password  string `json:"password" gorm:"password"`
 }
 
 type ProductStore struct {

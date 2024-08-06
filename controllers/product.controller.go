@@ -28,6 +28,7 @@ func NewControllerDependencies(service services.ProductServiceContainer) *Produc
 }
 
 func HomeHandler(ctx *gin.Context) {
+	ctx.Header("Content-Type", "application/json")
 	ctx.JSON(http.StatusOK, gin.H{"message": "This is the home page."})
 }
 
