@@ -3,6 +3,7 @@ package services
 import (
 	"github.com/Dom-HTG/gin/models"
 	"github.com/Dom-HTG/gin/repository"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type UserServiceContainer interface {
@@ -23,6 +24,13 @@ func NewUserServiceDependency(repo repository.UserRepositoryContainer) *UserServ
 }
 
 func (s *UserServiceDependency) CreateUser(user *models.User) error {
+	pass := []byte(user.Password)
+	hash, er := bcrypt.GenerateFromPassword(pass, 20)
+	if er != nil {
+		return er
+	}
+	user.Password = string(hash)
+
 	err := s.repo.CreateUser(user)
 	if err != nil {
 		return err
