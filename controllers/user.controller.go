@@ -8,6 +8,7 @@ import (
 	"github.com/Dom-HTG/gin/models"
 	"github.com/Dom-HTG/gin/services"
 	"github.com/gin-gonic/gin"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type UserControllerContainer interface {
@@ -68,7 +69,9 @@ func (c *UserControllerDependency) Login(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"msg": "User not found"})
 	}
 
-	if pass != dbUser.Password {
+	hashed := dbUser.Password
+
+	if err := bcrypt.CompareHashAndPassword([]byte(hashed), []byte(pass)); err != nil {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid username or password"})
 		return
 	}

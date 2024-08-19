@@ -24,6 +24,7 @@ func NewUserServiceDependency(repo repository.UserRepositoryContainer) *UserServ
 }
 
 func (s *UserServiceDependency) CreateUser(user *models.User) error {
+	// Hash the password before saving it to the database.
 	pass := []byte(user.Password)
 	hash, er := bcrypt.GenerateFromPassword(pass, 20)
 	if er != nil {
@@ -31,6 +32,7 @@ func (s *UserServiceDependency) CreateUser(user *models.User) error {
 	}
 	user.Password = string(hash)
 
+	//Call the createUser() method from the repository.
 	err := s.repo.CreateUser(user)
 	if err != nil {
 		return err
