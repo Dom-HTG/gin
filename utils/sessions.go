@@ -9,9 +9,15 @@ import (
 	"github.com/gin-contrib/sessions/redis"
 )
 
-type Claims struct {
-	sessionID string
+type SessionClaims struct {
+	SessionID string
+	Email     string
 	jwt.StandardClaims
+}
+
+type SessionData struct {
+	SessionID string
+	Email     string
 }
 
 type claimsConstant struct {
@@ -36,10 +42,11 @@ func InitRedisStore(address string) (redis.Store, error) {
 	return store, nil
 }
 
-func GenerateJWTSession(sessionId string) (string, error) {
+func GenerateJWTSession(sessionId, email string) (string, error) {
 	//build new claims for JWT token.
-	sessionClaims := &Claims{
-		sessionID: sessionId,
+	sessionClaims := &SessionClaims{
+		SessionID: sessionId,
+		Email:     email,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: Constant.expiresAt,
 		},
@@ -56,19 +63,23 @@ func GenerateJWTSession(sessionId string) (string, error) {
 	return signedToken, nil
 }
 
-func VerifyJWTSession(token string) (string, error) {
-	tokenClaims := &Claims{}
+func VerifyJWTSession(token string) (*SessionData, bool, error) {
+	tokenClaims := &SessionClaims{}
 
 	parsed_token, err := jwt.ParseWithClaims(token, tokenClaims, func(tk *jwt.Token) (interface{}, error) {
 		return Constant.sessionSecret, nil
 	})
-
 	if err != nil {
-		return "", errors.New("failed to parse token")
+		return nil, false, errors.New("failed to parse token")
+	}
+
+	data := &SessionData{
+		SessionID: tokenClaims.SessionID,
+		Email:     tokenClaims.Email,
 	}
 
 	if parsed_token.Valid {
-		return tokenClaims.sessionID, nil
+		return data, true, nil
 	}
-	return "", errors.New("token is not valid")
+	return nil, false, errors.New("token is not valid")
 }

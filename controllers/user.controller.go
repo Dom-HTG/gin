@@ -8,6 +8,7 @@ import (
 	"github.com/Dom-HTG/gin/helpers"
 	"github.com/Dom-HTG/gin/models"
 	"github.com/Dom-HTG/gin/services"
+	"github.com/Dom-HTG/gin/utils"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -98,11 +99,16 @@ func (c *UserControllerDependency) Login(ctx *gin.Context) {
 
 	//create session for user
 	sessionID := uuid.NewString()
-	sess := sessions.Default(ctx)
-	sess.Set("session_id", sessionID)
-	sess.Set("email", user.Email)
 
-	if err := sess.Save(); err != nil {
+	sessionToken, err := utils.GenerateJWTSession(sessionID, user.Email)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	session := sessions.Default(ctx)
+	session.Set("session_token", sessionToken)
+
+	if err := session.Save(); err != nil {
 		log.Fatal(err)
 	}
 }

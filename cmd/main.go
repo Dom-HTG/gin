@@ -16,10 +16,8 @@ import (
 )
 
 func main() {
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = ":8080"
-	}
+	portValue := os.Getenv("PORT")
+	port := fmt.Sprintf(":%s", portValue)
 
 	//Load environment variables.
 	err := godotenv.Load("main.env", "sessions.env")
@@ -33,8 +31,12 @@ func main() {
 		log.Fatalf("error initializing database: %v", err)
 	}
 
+	redisPortValue := os.Getenv("REDIS_PORT")
+	redisPort := fmt.Sprintf(":%s", redisPortValue)
+	address := fmt.Sprintf("localhost%s", redisPort)
+
 	//init redis store.
-	redisStore, err := utils.InitRedisStore("localhost:8080")
+	redisStore, err := utils.InitRedisStore(address)
 	if err != nil {
 		log.Fatalf("error initializing redis store: %v", err)
 	}
