@@ -23,11 +23,11 @@ var Constant = &claimsConstant{
 	sessionSecret: []byte(os.Getenv("SESSION_SECRET")),
 }
 
-func generateJWTSession(sessionID string) (string, error) {
+func generateJWTSession(sessionId string) (string, error) {
 
 	//build new claims for JWT token.
 	sessionClaims := &Claims{
-		sessionID: sessionID,
+		sessionID: sessionId,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: Constant.expiresAt,
 		},
