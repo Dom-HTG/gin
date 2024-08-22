@@ -2,12 +2,15 @@ package controller
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/Dom-HTG/gin/helpers"
 	"github.com/Dom-HTG/gin/models"
 	"github.com/Dom-HTG/gin/services"
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -52,6 +55,16 @@ func (c *UserControllerDependency) Signup(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, gin.H{"msg": "User created", "token": token})
 	// ctx.Set("token", token)
 	fmt.Print(token)
+
+	//create session for user
+	sessionID := uuid.NewString()
+	sess := sessions.Default(ctx)
+	sess.Set("session_id", sessionID)
+	sess.Set("email", user.Email)
+
+	if err := sess.Save(); err != nil {
+		log.Fatal(err)
+	}
 }
 
 func (c *UserControllerDependency) Login(ctx *gin.Context) {
@@ -82,4 +95,14 @@ func (c *UserControllerDependency) Login(ctx *gin.Context) {
 	}
 	ctx.Set("token", token)
 	ctx.JSON(http.StatusBadRequest, gin.H{"msg": "Invalid password"})
+
+	//create session for user
+	sessionID := uuid.NewString()
+	sess := sessions.Default(ctx)
+	sess.Set("session_id", sessionID)
+	sess.Set("email", user.Email)
+
+	if err := sess.Save(); err != nil {
+		log.Fatal(err)
+	}
 }
