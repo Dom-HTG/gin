@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
+	"github.com/gin-contrib/sessions/redis"
 )
 
 type Claims struct {
@@ -23,8 +24,19 @@ var Constant = &claimsConstant{
 	sessionSecret: []byte(os.Getenv("SESSION_SECRET")),
 }
 
-func generateJWTSession(sessionId string) (string, error) {
+var redisKey string = os.Getenv("REDIS_KEY")
+var redisPass string = os.Getenv("REDIS_PASS")
 
+// function to initialize redis store.
+func InitRedisStore(address string) (redis.Store, error) {
+	store, err := redis.NewStore(10, "tcp", address, redisPass, []byte(redisKey))
+	if err != nil {
+		return nil, err
+	}
+	return store, nil
+}
+
+func GenerateJWTSession(sessionId string) (string, error) {
 	//build new claims for JWT token.
 	sessionClaims := &Claims{
 		sessionID: sessionId,
@@ -44,7 +56,7 @@ func generateJWTSession(sessionId string) (string, error) {
 	return signedToken, nil
 }
 
-func verifyJWTSession(token string) (string, error) {
+func VerifyJWTSession(token string) (string, error) {
 	tokenClaims := &Claims{}
 
 	parsed_token, err := jwt.ParseWithClaims(token, tokenClaims, func(tk *jwt.Token) (interface{}, error) {

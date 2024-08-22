@@ -10,6 +10,7 @@ import (
 	"github.com/Dom-HTG/gin/repository"
 	"github.com/Dom-HTG/gin/services"
 	"github.com/Dom-HTG/gin/utils"
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 )
@@ -21,7 +22,7 @@ func main() {
 	}
 
 	//Load environment variables.
-	err := godotenv.Load()
+	err := godotenv.Load("main.env", "sessions.env")
 	if err != nil {
 		log.Fatalf("error loading environment variables %v", err)
 	}
@@ -30,6 +31,12 @@ func main() {
 	db, err := utils.InitializeDatabase()
 	if err != nil {
 		log.Fatalf("error initializing database: %v", err)
+	}
+
+	//init redis store.
+	redisStore, err := utils.InitRedisStore("localhost:8080")
+	if err != nil {
+		log.Fatalf("error initializing redis store: %v", err)
 	}
 
 	//product layer dependencies.
@@ -59,6 +66,7 @@ func main() {
 	}
 
 	access := router.Group("/api/access")
+	access.Use(sessions.Sessions("login-session", redisStore))
 	{
 		access.POST("/signup", userController.Signup)
 		access.POST("/login", middlewares.Authenticate(), userController.Login)
