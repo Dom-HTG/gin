@@ -54,16 +54,21 @@ func (c *UserControllerDependency) Signup(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusCreated, gin.H{"msg": "User created", "token": token})
-	// ctx.Set("token", token)
+	ctx.Set("token", token)
 	fmt.Print(token)
 
 	//create session for user
 	sessionID := uuid.NewString()
-	sess := sessions.Default(ctx)
-	sess.Set("session_id", sessionID)
-	sess.Set("email", user.Email)
 
-	if err := sess.Save(); err != nil {
+	sessionToken, err := utils.GenerateJWTSession(sessionID, user.Email)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	session := sessions.Default(ctx)
+	session.Set("session_token", sessionToken)
+
+	if err := session.Save(); err != nil {
 		log.Fatal(err)
 	}
 }

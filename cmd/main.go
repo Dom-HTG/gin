@@ -68,7 +68,7 @@ func main() {
 	}
 
 	access := router.Group("/api/access")
-	access.Use(sessions.Sessions("login-session", redisStore))
+	access.Use(sessions.Sessions("session_token", redisStore))
 	{
 		access.POST("/signup", userController.Signup)
 		access.POST("/login", middlewares.Authenticate(), userController.Login)
